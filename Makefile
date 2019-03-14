@@ -16,7 +16,6 @@ MYSQL_ROOT_PASSWORD = password
 # freeradius-schoolbox
 PORT1 = 1812
 PORT2 = 1813
-MYSQL_SERVER := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' mysql-schoolbox_run)
 
 # hostapd-schoolbox
 WLAN_INT = wlp2s0
@@ -43,7 +42,7 @@ freeradius:
     --name $(FREERADIUS_IMAGE)_run \
 	--net $(BRIDGE_NETWORK) \
     -p $(PORT1)-$(PORT2):$(PORT1)-$(PORT2)/udp \
-    -e MYSQL_SERVER=$(MYSQL_SERVER) \
+    -e MYSQL_SERVER=$(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' mysql-schoolbox_run) \
 	schoolboxsih/$(FREERADIUS_IMAGE):$(IMGTAG)
 
 hostapd:
@@ -69,10 +68,11 @@ coovachilli:
 
 phpmyadmin:
 	@echo "Installing phpMyAdmin: 9093"
+	MYSQL_SERVER := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' mysql-schoolbox_run)
 	@docker run --name phpmyadmin-schoolbox \
 	--net $(BRIDGE_NETWORK) \
 	-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
-    -e PMA_HOST=$(MYSQL_SERVER) \
+    -e PMA_HOST=$(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' mysql-schoolbox_run) \
 	-e PMA_PORT=3306 \
 	-p 9093:80 \
 	-d phpmyadmin/phpmyadmin
