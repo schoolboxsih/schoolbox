@@ -68,7 +68,7 @@ coovachilli:
 	@sudo iptables -I POSTROUTING -t nat -o $(WLAN_INT) -j MASQUERADE
 
 phpmyadmin:
-	@echo "Installing phpMyAdmin"
+	@echo "Installing phpMyAdmin: 9093"
 	@docker run --name phpmyadmin-schoolbox \
 	--net $(BRIDGE_NETWORK) \
 	-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
