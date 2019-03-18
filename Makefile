@@ -25,6 +25,18 @@ CHANNEL = 10
 start: mysql hostapd freeradius coovachilli
 killall: stopall deleteall
 
+start-existing:
+	@docker start $(MYSQL_IMAGE)_run
+	@docker start $(FREERADIUS_IMAGE)_run
+	@docker start $(HOSTAPD_IMAGE)_run
+	@docker start $(COOVA_IMAGE)_run
+
+stop-existing:
+	@docker stop $(MYSQL_IMAGE)_run
+	@docker stop $(FREERADIUS_IMAGE)_run
+	@docker stop $(HOSTAPD_IMAGE)_run
+	@docker stop $(COOVA_IMAGE)_run
+
 mysql:
 	@echo "Installing MySQL"
 	@docker run -t -d\
@@ -68,7 +80,6 @@ coovachilli:
 
 phpmyadmin:
 	@echo "Installing phpMyAdmin: 9093"
-	MYSQL_SERVER := $(shell docker inspect --format '{{ .NetworkSettings.IPAddress }}' mysql-schoolbox_run)
 	@docker run --name phpmyadmin-schoolbox \
 	--net $(BRIDGE_NETWORK) \
 	-e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) \
